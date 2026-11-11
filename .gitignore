@@ -1,0 +1,16 @@
+# OS 垃圾文件
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+
+# Obsidian 本地状态（不跨设备同步，避免多端冲突）
+.obsidian/workspace.json
+.obsidian/workspace-mobile.json
+.obsidian/cache/
+
+# Obsidian 回收站（本地删除不进版本库）
+.trash/
+
+# 临时文件
+*.tmp

@@ -1,0 +1,266 @@
+# Leetcode 题解 - 排序
+<!-- GFM-TOC -->
+* [Leetcode 题解 - 排序](#leetcode-题解---排序)
+    * [快速选择](#快速选择)
+    * [堆](#堆)
+        * [1. Kth Element](#1-kth-element)
+    * [桶排序](#桶排序)
+        * [1. 出现频率最多的 k 个元素](#1-出现频率最多的-k-个元素)
+        * [2. 按照字符出现次数对字符串排序](#2-按照字符出现次数对字符串排序)
+    * [荷兰国旗问题](#荷兰国旗问题)
+        * [1. 按颜色进行排序](#1-按颜色进行排序)
+    * [参考资料](#参考资料)
+<!-- GFM-TOC -->
+
+
+## 快速选择
+
+用于求解 Kth Element 问题，也就是第 K 个元素的问题。
+
+可以使用快速排序的 partition() 进行实现。需要先打乱数组，否则最坏情况下时间复杂度为 O(N<sup>2</sup>)。
+
+## 堆
+
+用于求解 TopK Elements 问题，也就是 K 个最大元素的问题。使用大小为 K 的小顶堆来实现：不断地往小顶堆中插入新元素，当堆中元素的数量大于 K 时，移除堆顶元素，也就是当前堆中最小的元素，剩下的元素都为当前添加过的元素中最大的 K 个元素。插入和移除堆顶元素的时间复杂度都为 O(logK)。
+
+堆也可以用于求解 Kth Element 问题，得到了大小为 K 的小顶堆之后，堆顶元素就是第 K 大的元素。同理，求 K 个最小元素或者第 K 小的元素时使用大顶堆。
+
+快速选择也可以求解 TopK Elements 问题：快速选择结束时，第 K 大的元素已经位于下标 N - K，它右边的都不小于它，取数组最后 K 个元素即可，这 K 个元素之间不保证有序。不能简单地取出所有大于等于第 K 大元素的数，有重复值时会多于 K 个。
+
+### 1. Kth Element
+
+215\. Kth Largest Element in an Array (Medium)
+
+[Leetcode](https://leetcode.com/problems/kth-largest-element-in-an-array/description/) / [力扣](https://leetcode-cn.com/problems/kth-largest-element-in-an-array/description/)
+
+```text
+Input: [3,2,1,5,6,4] and k = 2
+Output: 5
+```
+
+题目描述：找到数组中第 k 大的元素。
+
+排序：时间复杂度 O(NlogN)，空间复杂度 O(logN)（JDK 对基本类型的排序在部分输入下还会分配额外的数组）。
+
+```java
+public int findKthLargest(int[] nums, int k) {
+    Arrays.sort(nums);
+    return nums[nums.length - k];
+}
+```
+
+堆：时间复杂度 O(NlogK)，空间复杂度 O(K)。
+
+```java
+public int findKthLargest(int[] nums, int k) {
+    PriorityQueue<Integer> pq = new PriorityQueue<>(); // 小顶堆
+    for (int val : nums) {
+        pq.add(val);
+        if (pq.size() > k)  // 维护堆的大小为 K
+            pq.poll();
+    }
+    return pq.peek();
+}
+```
+
+快速选择：平均时间复杂度 O(N)，空间复杂度 O(1)。
+
+第 k 大的元素就是升序排序后下标为 N - k 的元素。partition() 与快速排序的[切分](算法 - 排序.md#2-切分)相同，返回切分元素的最终位置 j，它左边的元素都不大于它，右边的都不小于它。j 等于目标下标时直接得到答案；j 小于目标下标时只需要在右半边继续切分，否则在左半边，每次只处理一边，平均下来总的比较次数是 N + N / 2 + N / 4 + ... ≈ 2N。
+
+以 [3, 2, 1, 5, 6, 4]、k = 2 为例（为便于对照没有打乱），两轮切分就找到了答案：
+
+<div align="center"> ![](pics/lc-sort-quickselect.png) </div><br>
+
+```java
+public int findKthLargest(int[] nums, int k) {
+    shuffle(nums);  // 先打乱，避免最坏情况
+    k = nums.length - k;
+    int l = 0, h = nums.length - 1;
+    while (l < h) {
+        int j = partition(nums, l, h);
+        if (j == k) {
+            break;
+        } else if (j < k) {
+            l = j + 1;
+        } else {
+            h = j - 1;
+        }
+    }
+    return nums[k];
+}
+
+private int partition(int[] a, int l, int h) {
+    int i = l, j = h + 1;
+    while (true) {
+        while (a[++i] < a[l] && i < h) ;
+        while (a[--j] > a[l] && j > l) ;
+        if (i >= j) {
+            break;
+        }
+        swap(a, i, j);
+    }
+    swap(a, l, j);
+    return j;
+}
+
+private void swap(int[] a, int i, int j) {
+    int t = a[i];
+    a[i] = a[j];
+    a[j] = t;
+}
+
+private void shuffle(int[] a) {
+    Random random = new Random();
+    for (int i = a.length - 1; i > 0; i--) {
+        swap(a, i, random.nextInt(i + 1));
+    }
+}
+```
+
+## 桶排序
+
+### 1. 出现频率最多的 k 个元素
+
+347\. Top K Frequent Elements (Medium)
+
+[Leetcode](https://leetcode.com/problems/top-k-frequent-elements/description/) / [力扣](https://leetcode-cn.com/problems/top-k-frequent-elements/description/)
+
+```text
+Given [1,1,1,2,2,3] and k = 2, return [1,2].
+```
+
+设置若干个桶，每个桶存储出现频率相同的数。桶的下标表示数出现的频率，即第 i 个桶中存储的数出现的频率为 i。
+
+把数都放到桶之后，从后向前遍历桶，最先得到的 k 个数就是出现频率最多的的 k 个数。
+
+```java
+public int[] topKFrequent(int[] nums, int k) {
+    Map<Integer, Integer> frequencyForNum = new HashMap<>();
+    for (int num : nums) {
+        frequencyForNum.put(num, frequencyForNum.getOrDefault(num, 0) + 1);
+    }
+    List<Integer>[] buckets = new ArrayList[nums.length + 1];
+    for (int key : frequencyForNum.keySet()) {
+        int frequency = frequencyForNum.get(key);
+        if (buckets[frequency] == null) {
+            buckets[frequency] = new ArrayList<>();
+        }
+        buckets[frequency].add(key);
+    }
+    List<Integer> topK = new ArrayList<>();
+    for (int i = buckets.length - 1; i >= 0 && topK.size() < k; i--) {
+        if (buckets[i] == null) {
+            continue;
+        }
+        if (buckets[i].size() <= (k - topK.size())) {
+            topK.addAll(buckets[i]);
+        } else {
+            topK.addAll(buckets[i].subList(0, k - topK.size()));
+        }
+    }
+    int[] res = new int[k];
+    for (int i = 0; i < k; i++) {
+        res[i] = topK.get(i);
+    }
+    return res;
+}
+```
+
+### 2. 按照字符出现次数对字符串排序
+
+451\. Sort Characters By Frequency (Medium)
+
+[Leetcode](https://leetcode.com/problems/sort-characters-by-frequency/description/) / [力扣](https://leetcode-cn.com/problems/sort-characters-by-frequency/description/)
+
+```text
+Input:
+"tree"
+
+Output:
+"eert"
+
+Explanation:
+'e' appears twice while 'r' and 't' both appear once.
+So 'e' must appear before both 'r' and 't'. Therefore "eetr" is also a valid answer.
+```
+
+把每个字符按出现次数放进桶中，从出现次数最多的桶开始，把每个字符重复它的出现次数拼接起来。
+
+```java
+public String frequencySort(String s) {
+    Map<Character, Integer> frequencyForNum = new HashMap<>();
+    for (char c : s.toCharArray())
+        frequencyForNum.put(c, frequencyForNum.getOrDefault(c, 0) + 1);
+
+    List<Character>[] frequencyBucket = new ArrayList[s.length() + 1];
+    for (char c : frequencyForNum.keySet()) {
+        int f = frequencyForNum.get(c);
+        if (frequencyBucket[f] == null) {
+            frequencyBucket[f] = new ArrayList<>();
+        }
+        frequencyBucket[f].add(c);
+    }
+    StringBuilder str = new StringBuilder();
+    for (int i = frequencyBucket.length - 1; i >= 0; i--) {
+        if (frequencyBucket[i] == null) {
+            continue;
+        }
+        for (char c : frequencyBucket[i]) {
+            for (int j = 0; j < i; j++) {
+                str.append(c);
+            }
+        }
+    }
+    return str.toString();
+}
+```
+
+## 荷兰国旗问题
+
+荷兰国旗包含三种颜色：红、白、蓝。
+
+有三种颜色的球，算法的目标是将这三种球按颜色顺序正确地排列。它其实是三向切分快速排序的一种变种，在三向切分快速排序中，每次切分都将数组分成三个区间：小于切分元素、等于切分元素、大于切分元素，而该算法是将数组分成三个区间：等于红色、等于白色、等于蓝色。
+
+<div align="center"> ![](pics/lc-sort-dutch-flag.png) </div><br>
+
+
+### 1. 按颜色进行排序
+
+75\. Sort Colors (Medium)
+
+[Leetcode](https://leetcode.com/problems/sort-colors/description/) / [力扣](https://leetcode-cn.com/problems/sort-colors/description/)
+
+```text
+Input: [2,0,2,1,1,0]
+Output: [0,0,1,1,2,2]
+```
+
+题目描述：只有 0/1/2 三种颜色。
+
+三个指针把数组分成四段：[0, zero] 全是 0，[zero + 1, one - 1] 全是 1，[one, two - 1] 还没处理，[two, n - 1] 全是 2。one 指向的数为 0 时，与 zero + 1 交换，交换过来的数一定是 1（或者就是它自己），因此 one 可以前进；为 2 时与 two - 1 交换，换过来的数还没看过，one 不能前进。
+
+```java
+public void sortColors(int[] nums) {
+    int zero = -1, one = 0, two = nums.length;
+    while (one < two) {
+        if (nums[one] == 0) {
+            swap(nums, ++zero, one++);
+        } else if (nums[one] == 2) {
+            swap(nums, --two, one);
+        } else {
+            ++one;
+        }
+    }
+}
+
+private void swap(int[] nums, int i, int j) {
+    int t = nums[i];
+    nums[i] = nums[j];
+    nums[j] = t;
+}
+```
+
+## 参考资料
+
+- [LeetCode 题库](https://leetcode.com/problemset/)
+- Sedgewick R, Wayne K. 算法（第 4 版）[M]. 人民邮电出版社, 2012.
