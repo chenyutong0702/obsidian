@@ -1,0 +1,17 @@
+{
+  "autoBackupAfterFileChange": true,
+  "autoPushInterval": 10,
+  "autoPullInterval": 10,
+  "autoSaveInterval": 0,
+  "autoPullOnBoot": true,
+  "pullBeforePush": true,
+  "differentIntervalCommitAndPush": false,
+  "rebaseAutoStash": true,
+  "squashCommitsBeforePush": false,
+  "autoCommitMessage": "vault backup: {{date}}",
+  "customMessageOnAutoBackup": "vault sync: {{date}}",
+  "autoCommitGlobs": "",
+  "autoCommitGlobMode": "include",
+  "syncMethod": "merge",
+  "showStatusBar": true
+}
