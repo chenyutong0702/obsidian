@@ -1,0 +1,11 @@
+{
+  "fileExplorer": {
+    "sortBy": "name",
+    "sortOrder": "asc"
+  },
+  "userIgnoreFilters": [
+    "assets",
+    "pics",
+    "*.py"
+  ]
+}

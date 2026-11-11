@@ -1,10 +1,5 @@
 <div align="center">
     <p><a href="https://cyc2018.xyz">个人网站在线阅读</a> · <a href="https://my.feishu.cn/wiki/NrECwvPu2iwdXek3EtkcoiV7noc">飞书知识库在线阅读</a></p>
-    <a href="https://gitstar-ranking.com/repositories"> ![](https://badgen.net/badge/Rank/13?icon=github&color=4ab8a1)</a>
-    <a href="https://github.com/CyC2018/CS-Notes"> ![](https://badgen.net/github/stars/CyC2018/CS-Notes?icon=github&color=4ab8a1)</a>
-    <a href="https://github.com/CyC2018/CS-Notes"> ![](https://badgen.net/github/forks/CyC2018/CS-Notes?icon=github&color=4ab8a1)</a>
-    <!-- <a href="assets/download.md"> ![](https://badgen.net/badge/OvO/离线下载?icon=telegram&color=4ab8a1)</a> -->
-    <!-- <a href="assets/download.md"> ![](https://badgen.net/badge/公众号/CyC2018?icon=rss&color=4ab8a1)</a> -->
 </div>
 <br>
 
@@ -15,7 +10,6 @@
 <br>
 
 <div align="center">
-    ![](https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/githubio/LogoMakr_0zpEzN.png)
 </div>
 
 <br>

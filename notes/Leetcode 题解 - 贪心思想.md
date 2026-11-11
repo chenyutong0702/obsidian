@@ -41,7 +41,7 @@ Output: 2
 
 交换后的方案仍然最优，并且第一步与贪心相同。对剩下的孩子和饼干重复这个过程，最优方案可以逐步变成贪心方案，因此贪心方案也是最优的。
 
-<div align="center"> ![](https://cs-notes-1256109796.cos.ap-guangzhou.myqcloud.com/e69537d2-a016-4676-b169-9ea17eeb9037.gif) </div><br>
+<div align="center"> ![](../assets/cos/e69537d2-a016-4676-b169-9ea17eeb9037.gif) </div><br>
 
 ```java
 public int findContentChildren(int[] grid, int[] size) {
