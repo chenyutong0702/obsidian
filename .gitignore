@@ -14,3 +14,6 @@ Desktop.ini
 
 # 临时文件
 *.tmp
+
+# Copilot 本地数据（含 API key，绝不进版本库，换设备需重填）
+.obsidian/plugins/copilot/data.json
